@@ -345,6 +345,70 @@
     border-radius: 4px;
   }
 
+  .task-due {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+    font-weight: 500;
+  }
+
+  .task-due.overdue { background: var(--danger-dim); color: var(--danger); }
+  .task-due.due-today { background: #f59e4230; color: var(--tag-orange); }
+  .task-due.due-soon { background: #f0c04020; color: var(--accent); }
+  .task-due.due-later { background: #ffffff08; color: var(--text-muted); }
+
+  /* Date input styling */
+  .date-picker-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .date-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .date-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  .date-btn .clear-date {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    color: var(--bg);
+    font-size: 0.55rem;
+    font-weight: 700;
+    margin-left: 2px;
+    line-height: 1;
+  }
+
+  .hidden-date-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
   .delete-btn {
     background: none;
     border: none;
@@ -427,6 +491,10 @@
     <button class="tag-btn" data-tag="personal">Personal</button>
     <button class="tag-btn" data-tag="urgent">Urgent</button>
     <button class="tag-btn" data-tag="ideas">Ideas</button>
+    <div class="date-picker-wrap">
+      <button class="date-btn" id="dateBtn">📅 Due date</button>
+      <input type="date" class="hidden-date-input" id="dueDateInput" />
+    </div>
   </div>
 
   <div class="filters">
@@ -434,6 +502,7 @@
     <button class="filter-btn" data-filter="active">Active</button>
     <button class="filter-btn" data-filter="completed">Completed</button>
     <button class="filter-btn" data-filter="priority">Priority</button>
+    <button class="filter-btn" data-filter="overdue">Overdue</button>
   </div>
 
   <div class="progress-wrap">
@@ -450,6 +519,7 @@
   let currentFilter = 'all';
   let selectedTag = null;
   let isPriority = false;
+  let selectedDueDate = null;
 
   function saveTasks() {
     localStorage.setItem('taskforge_tasks', JSON.stringify(tasks));
@@ -462,6 +532,29 @@
   const priorityToggle = document.getElementById('priorityToggle');
   const tagBtns = document.querySelectorAll('.tag-btn');
   const filterBtns = document.querySelectorAll('.filter-btn');
+  const dateBtn = document.getElementById('dateBtn');
+  const dueDateInput = document.getElementById('dueDateInput');
+
+  // ── Date picker ──
+  dateBtn.addEventListener('click', (e) => {
+    if (selectedDueDate && e.target.classList.contains('clear-date')) {
+      selectedDueDate = null;
+      dateBtn.innerHTML = '📅 Due date';
+      dateBtn.classList.remove('active');
+      return;
+    }
+    dueDateInput.showPicker ? dueDateInput.showPicker() : dueDateInput.click();
+  });
+
+  dueDateInput.addEventListener('change', () => {
+    if (dueDateInput.value) {
+      selectedDueDate = dueDateInput.value;
+      const d = new Date(dueDateInput.value + 'T00:00:00');
+      const label = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      dateBtn.innerHTML = `📅 ${label} <span class="clear-date">✕</span>`;
+      dateBtn.classList.add('active');
+    }
+  });
 
   // ── Tag selection ──
   tagBtns.forEach(btn => {
@@ -505,6 +598,7 @@
       completed: false,
       priority: isPriority,
       tag: selectedTag,
+      dueDate: selectedDueDate || null,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       date: new Date().toLocaleDateString([], { month: 'short', day: 'numeric' })
     });
@@ -512,8 +606,12 @@
     input.value = '';
     isPriority = false;
     selectedTag = null;
+    selectedDueDate = null;
     priorityToggle.classList.remove('active');
     tagBtns.forEach(b => b.classList.remove('active'));
+    dateBtn.innerHTML = '📅 Due date';
+    dateBtn.classList.remove('active');
+    dueDateInput.value = '';
     saveTasks();
     render();
     input.focus();
@@ -559,16 +657,48 @@
     }
   }
 
+  // ── Due date helpers ──
+  function getDueStatus(dueDate) {
+    if (!dueDate) return null;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const due = new Date(dueDate + 'T00:00:00');
+    const diffDays = Math.floor((due - today) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return 'overdue';
+    if (diffDays === 0) return 'due-today';
+    if (diffDays <= 3) return 'due-soon';
+    return 'due-later';
+  }
+
+  function formatDueDate(dueDate) {
+    const d = new Date(dueDate + 'T00:00:00');
+    const status = getDueStatus(dueDate);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffDays = Math.floor((d - today) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays === -1) return 'Yesterday';
+    if (diffDays < -1) return `${Math.abs(diffDays)}d overdue`;
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
   // ── Render ──
   function render() {
     let filtered = tasks;
     if (currentFilter === 'active') filtered = tasks.filter(t => !t.completed);
     if (currentFilter === 'completed') filtered = tasks.filter(t => t.completed);
     if (currentFilter === 'priority') filtered = tasks.filter(t => t.priority);
+    if (currentFilter === 'overdue') filtered = tasks.filter(t => !t.completed && t.dueDate && getDueStatus(t.dueDate) === 'overdue');
 
     filtered = [...filtered].sort((a, b) => {
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
       if (a.priority !== b.priority) return b.priority ? 1 : -1;
+      // Sort by due date (soonest first), tasks without due dates go last
+      if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+      if (a.dueDate && !b.dueDate) return -1;
+      if (!a.dueDate && b.dueDate) return 1;
       return b.id - a.id;
     });
 
@@ -579,7 +709,10 @@
           <p>${currentFilter === 'all' ? 'Your slate is clean. Add a task to begin.' : 'No tasks match this filter.'}</p>
         </div>`;
     } else {
-      taskList.innerHTML = filtered.map((t, i) => `
+      taskList.innerHTML = filtered.map((t, i) => {
+        const dueStatus = t.dueDate ? getDueStatus(t.dueDate) : null;
+        const dueLabel = t.dueDate ? formatDueDate(t.dueDate) : '';
+        return `
         <div class="task-item ${t.completed ? 'completed' : ''}" data-id="${t.id}" style="animation-delay:${i * 0.03}s">
           <div class="checkbox ${t.completed ? 'checked' : ''}" onclick="toggleTask(${t.id})"></div>
           <div class="task-content">
@@ -587,24 +720,28 @@
             <div class="task-meta">
               ${t.priority ? '<span class="task-tag priority">★ Priority</span>' : ''}
               ${t.tag ? `<span class="task-tag ${t.tag}">${t.tag}</span>` : ''}
+              ${t.dueDate ? `<span class="task-due ${dueStatus}">📅 ${dueLabel}</span>` : ''}
               <span class="task-time">${t.date || ''} ${t.time}</span>
             </div>
           </div>
           <button class="delete-btn" onclick="deleteTask(${t.id})" aria-label="Delete task">✕</button>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
     }
 
-    // Stats
+    // Stats — count overdue for the stat bar
     const total = tasks.length;
     const done = tasks.filter(t => t.completed).length;
+    const overdue = tasks.filter(t => !t.completed && t.dueDate && getDueStatus(t.dueDate) === 'overdue').length;
     document.getElementById('totalCount').textContent = total;
     document.getElementById('doneCount').textContent = done;
     document.getElementById('pendingCount').textContent = total - done;
 
     const pct = total ? Math.round((done / total) * 100) : 0;
     document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressLabel').textContent = pct + '% complete';
+    document.getElementById('progressLabel').textContent = overdue > 0
+      ? `${pct}% complete · ${overdue} overdue`
+      : `${pct}% complete`;
   }
 
   function escapeHtml(str) {
