@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Taskforge">
+<meta name="apple-mobile-web-app-title" content="TaskForge × Voltaire">
 <meta name="theme-color" content="#0a0a0b">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Taskforge</title>
+<title>TaskForge × Voltaire ⚡</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -85,6 +85,28 @@
     letter-spacing: 3px;
     text-transform: uppercase;
     animation: fadeInUp 0.6s ease-out 0.1s both;
+  }
+
+  .header .signature {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #ffffff05;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    animation: fadeInUp 0.6s ease-out 0.15s both;
+  }
+
+  .header .signature .bolt {
+    color: var(--accent);
+    font-size: 0.9rem;
+    line-height: 1;
   }
 
   .stats-bar {
@@ -462,8 +484,9 @@
 <body>
 <div class="app">
   <div class="header">
-    <h1>Taskforge</h1>
+    <h1>TaskForge</h1>
     <p class="subtitle">Shape your day with intention</p>
+    <div class="signature"><span>Voltaire</span><span class="bolt">⚡</span></div>
     <div class="stats-bar">
       <div class="stat">
         <span class="stat-number" id="totalCount">0</span>

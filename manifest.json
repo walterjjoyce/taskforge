@@ -1,7 +1,7 @@
 {
-  "name": "Taskforge",
-  "short_name": "Taskforge",
-  "description": "Shape your day with intention",
+  "name": "TaskForge × Voltaire",
+  "short_name": "TaskForge",
+  "description": "TaskForge by Voltaire ⚡ — shape your day with intention", 
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0a0a0b",
