@@ -647,7 +647,7 @@
     return {
       id:        row.id,
       text:      row.Task || '',
-      completed: (row.Status || '').toLowerCase() === 'completed',
+     completed: (row.Status && row.Status.value ? row.Status.value : (row.Status || '')).toLowerCase() === 'completed',
       tag:       row.Category || null,
       priority:  row.Priority === true || row.Priority === 'true',
       dueDate:   row.Due_Date ? row.Due_Date.split('T')[0] : null,
