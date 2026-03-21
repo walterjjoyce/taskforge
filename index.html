@@ -46,7 +46,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Grain overlay */
   body::before {
     content: '';
     position: fixed;
@@ -89,10 +88,7 @@
     opacity: 0.72;
   }
 
-  .header h1 .voltaire-mark .bolt {
-    margin-left: 3px;
-    font-size: 0.92em;
-  }
+  .header h1 .voltaire-mark .bolt { margin-left: 3px; font-size: 0.92em; }
 
   .header .subtitle {
     font-size: 0.8rem;
@@ -103,7 +99,6 @@
     text-transform: uppercase;
     animation: fadeInUp 0.6s ease-out 0.1s both;
   }
-
 
   .stats-bar {
     display: flex;
@@ -126,6 +121,35 @@
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 1px;
+  }
+
+  /* SYNC STATUS */
+  .sync-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    animation: fadeInUp 0.6s ease-out 0.25s both;
+  }
+
+  .sync-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: background 0.3s;
+  }
+
+  .sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
+  .sync-dot.synced { background: var(--success); }
+  .sync-dot.error { background: var(--danger); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
   }
 
   /* INPUT AREA */
@@ -153,7 +177,7 @@
     outline: none;
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
-    font-size: 16px; /* prevents iOS zoom */
+    font-size: 16px;
     padding: 12px 14px;
     font-weight: 400;
   }
@@ -176,6 +200,7 @@
   }
 
   .add-btn:active { transform: scale(0.95); filter: brightness(0.9); }
+  .add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   /* OPTIONS ROW */
   .options-row {
@@ -202,10 +227,10 @@
   }
 
   .priority-btn.active { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
-  .tag-btn.active[data-tag="work"] { border-color: var(--tag-blue); color: var(--tag-blue); }
-  .tag-btn.active[data-tag="personal"] { border-color: var(--tag-purple); color: var(--tag-purple); }
-  .tag-btn.active[data-tag="urgent"] { border-color: var(--tag-orange); color: var(--tag-orange); }
-  .tag-btn.active[data-tag="ideas"] { border-color: var(--tag-pink); color: var(--tag-pink); }
+  .tag-btn.active[data-tag="Work"] { border-color: var(--tag-blue); color: var(--tag-blue); }
+  .tag-btn.active[data-tag="Personal"] { border-color: var(--tag-purple); color: var(--tag-purple); }
+  .tag-btn.active[data-tag="Urgent"] { border-color: var(--tag-orange); color: var(--tag-orange); }
+  .tag-btn.active[data-tag="Ideas"] { border-color: var(--tag-pink); color: var(--tag-pink); }
 
   /* FILTERS */
   .filters {
@@ -284,25 +309,8 @@
   .task-item.completed { opacity: 0.4; }
   .task-item.completed .task-text { text-decoration: line-through; }
   .task-item.removing { animation: slideOut 0.3s ease-in forwards; }
+  .task-item.saving { opacity: 0.6; }
 
-  /* Swipe-to-delete visual cue */
-  .task-item .swipe-bg {
-    position: absolute;
-    right: 0; top: 0; bottom: 0;
-    width: 80px;
-    background: var(--danger);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  /* Checkbox */
   .checkbox {
     width: 24px;
     height: 24px;
@@ -316,10 +324,7 @@
     flex-shrink: 0;
   }
 
-  .checkbox.checked {
-    background: var(--success);
-    border-color: var(--success);
-  }
+  .checkbox.checked { background: var(--success); border-color: var(--success); }
 
   .checkbox.checked::after {
     content: '✓';
@@ -348,10 +353,10 @@
     font-weight: 500;
   }
 
-  .task-tag.work { background: #5b9bf520; color: var(--tag-blue); }
-  .task-tag.personal { background: #a78bfa20; color: var(--tag-purple); }
-  .task-tag.urgent { background: #f59e4220; color: var(--tag-orange); }
-  .task-tag.ideas { background: #f472b620; color: var(--tag-pink); }
+  .task-tag.Work { background: #5b9bf520; color: var(--tag-blue); }
+  .task-tag.Personal { background: #a78bfa20; color: var(--tag-purple); }
+  .task-tag.Urgent { background: #f59e4220; color: var(--tag-orange); }
+  .task-tag.Ideas { background: #f472b620; color: var(--tag-pink); }
   .task-tag.priority { background: var(--danger-dim); color: var(--danger); }
 
   .task-time {
@@ -377,12 +382,7 @@
   .task-due.due-soon { background: #f0c04020; color: var(--accent); }
   .task-due.due-later { background: #ffffff08; color: var(--text-muted); }
 
-  /* Date input styling */
-  .date-picker-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
+  .date-picker-wrap { position: relative; display: flex; align-items: center; }
 
   .date-btn {
     background: var(--surface);
@@ -441,10 +441,46 @@
 
   .delete-btn:active { color: var(--danger); background: var(--danger-dim); }
 
+  /* Loading skeleton */
+  .skeleton {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .skeleton-box {
+    background: linear-gradient(90deg, var(--border) 25%, var(--surface-hover) 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
   /* Empty state */
   .empty-state { text-align: center; padding: 50px 20px; animation: fadeInUp 0.5s ease-out; }
   .empty-state .icon { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.3; }
   .empty-state p { color: var(--text-muted); font-size: 0.85rem; font-weight: 300; }
+
+  /* Error banner */
+  .error-banner {
+    background: var(--danger-dim);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: var(--danger);
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .error-banner.visible { display: block; }
 
   /* ANIMATIONS */
   @keyframes fadeInUp {
@@ -469,7 +505,6 @@
 
   .checkbox.just-checked { animation: popIn 0.3s ease-out; }
 
-  /* Landscape phone */
   @media (max-height: 500px) {
     .header { margin-bottom: 20px; }
     .header h1 { font-size: 2rem; }
@@ -496,7 +531,13 @@
         <span class="stat-label">Pending</span>
       </div>
     </div>
+    <div class="sync-status">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncLabel">Connecting...</span>
+    </div>
   </div>
+
+  <div class="error-banner" id="errorBanner"></div>
 
   <div class="input-area">
     <input type="text" id="taskInput" placeholder="What needs to be done?" />
@@ -505,10 +546,10 @@
 
   <div class="options-row">
     <button class="priority-btn" id="priorityToggle">★ Priority</button>
-    <button class="tag-btn" data-tag="work">Work</button>
-    <button class="tag-btn" data-tag="personal">Personal</button>
-    <button class="tag-btn" data-tag="urgent">Urgent</button>
-    <button class="tag-btn" data-tag="ideas">Ideas</button>
+    <button class="tag-btn" data-tag="Work">Work</button>
+    <button class="tag-btn" data-tag="Personal">Personal</button>
+    <button class="tag-btn" data-tag="Urgent">Urgent</button>
+    <button class="tag-btn" data-tag="Ideas">Ideas</button>
     <div class="date-picker-wrap">
       <button class="date-btn" id="dateBtn">📅 Due date</button>
       <input type="date" class="hidden-date-input" id="dueDateInput" />
@@ -532,26 +573,309 @@
 </div>
 
 <script>
+  // ── CONFIG ──────────────────────────────────────────────
+  const PROXY_URL = 'https://lucky-queen-22b1.walterjjoyce.workers.dev';
+  const TABLE_ID  = '897036';
+  const API_BASE  = `${PROXY_URL}/api/database/rows/table/${TABLE_ID}/`;
+
   // ── State ──
-  let tasks = JSON.parse(localStorage.getItem('taskforge_tasks') || '[]');
+  let tasks = [];
   let currentFilter = 'all';
   let selectedTag = null;
   let isPriority = false;
   let selectedDueDate = null;
 
-  function saveTasks() {
-    localStorage.setItem('taskforge_tasks', JSON.stringify(tasks));
+  // ── DOM refs ──
+  const input         = document.getElementById('taskInput');
+  const addBtn        = document.getElementById('addBtn');
+  const taskList      = document.getElementById('taskList');
+  const priorityToggle = document.getElementById('priorityToggle');
+  const tagBtns       = document.querySelectorAll('.tag-btn');
+  const filterBtns    = document.querySelectorAll('.filter-btn');
+  const dateBtn       = document.getElementById('dateBtn');
+  const dueDateInput  = document.getElementById('dueDateInput');
+  const syncDot       = document.getElementById('syncDot');
+  const syncLabel     = document.getElementById('syncLabel');
+  const errorBanner   = document.getElementById('errorBanner');
+
+  // ── Sync indicator ──
+  function setSyncState(state, msg) {
+    syncDot.className = 'sync-dot ' + state;
+    syncLabel.textContent = msg;
   }
 
-  // ── DOM refs ──
-  const input = document.getElementById('taskInput');
-  const addBtn = document.getElementById('addBtn');
-  const taskList = document.getElementById('taskList');
-  const priorityToggle = document.getElementById('priorityToggle');
-  const tagBtns = document.querySelectorAll('.tag-btn');
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const dateBtn = document.getElementById('dateBtn');
-  const dueDateInput = document.getElementById('dueDateInput');
+  function showError(msg) {
+    errorBanner.textContent = msg;
+    errorBanner.classList.add('visible');
+    setTimeout(() => errorBanner.classList.remove('visible'), 5000);
+  }
+
+  // ── Baserow API helpers ──
+  async function apiGet(url) {
+    const res = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
+    if (!res.ok) throw new Error(`GET ${res.status}`);
+    return res.json();
+  }
+
+  async function apiPost(body) {
+    const res = await fetch(API_BASE + '?user_field_names=true', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`POST ${res.status}`);
+    return res.json();
+  }
+
+  async function apiPatch(id, body) {
+    const res = await fetch(`${API_BASE}${id}/?user_field_names=true`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`PATCH ${res.status}`);
+    return res.json();
+  }
+
+  async function apiDelete(id) {
+    const res = await fetch(`${API_BASE}${id}/`, { method: 'DELETE' });
+    if (!res.ok) throw new Error(`DELETE ${res.status}`);
+  }
+
+  // ── Map Baserow row → local task ──
+  function rowToTask(row) {
+    return {
+      id:        row.id,
+      text:      row.Task || '',
+      completed: (row.Status || '').toLowerCase() === 'completed',
+      tag:       row.Category || null,
+      priority:  row.Priority === true || row.Priority === 'true',
+      dueDate:   row.Due_Date ? row.Due_Date.split('T')[0] : null,
+      notes:     row.Notes || '',
+      createdOn: row.Created_On || null,
+      time:      row.Created_On
+                   ? new Date(row.Created_On).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                   : '',
+      date:      row.Created_On
+                   ? new Date(row.Created_On).toLocaleDateString([], { month: 'short', day: 'numeric' })
+                   : ''
+    };
+  }
+
+  // ── Load all tasks from Baserow ──
+  async function loadTasks() {
+    setSyncState('syncing', 'Loading...');
+    showSkeleton();
+    try {
+      let allRows = [];
+      let url = API_BASE + '?user_field_names=true&size=100&order_by=-id';
+      while (url) {
+        const data = await apiGet(url);
+        allRows = allRows.concat(data.results || []);
+        // Baserow paginates; follow next if present
+        url = data.next ? data.next.replace('https://api.baserow.io', PROXY_URL) : null;
+      }
+      tasks = allRows.map(rowToTask);
+      setSyncState('synced', `Synced · ${tasks.length} tasks`);
+      render();
+    } catch (err) {
+      setSyncState('error', 'Connection error');
+      showError('Could not load tasks. Check your proxy and Baserow token.');
+      taskList.innerHTML = '';
+      console.error(err);
+    }
+  }
+
+  function showSkeleton() {
+    taskList.innerHTML = [1,2,3].map(() => `
+      <div class="skeleton">
+        <div class="skeleton-box" style="width:24px;height:24px;border-radius:6px;flex-shrink:0"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <div class="skeleton-box" style="height:14px;width:70%"></div>
+          <div class="skeleton-box" style="height:10px;width:40%"></div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── Add task ──
+  async function addTask() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    addBtn.disabled = true;
+    addBtn.textContent = '...';
+    setSyncState('syncing', 'Saving...');
+
+    const payload = {
+      Task:     text,
+      Status:   'Active',
+      Category: selectedTag || null,
+      Priority: isPriority,
+      Due_Date: selectedDueDate || null,
+      Notes:    ''
+    };
+
+    try {
+      const row = await apiPost(payload);
+      tasks.unshift(rowToTask(row));
+
+      // Reset inputs
+      input.value = '';
+      isPriority = false;
+      selectedTag = null;
+      selectedDueDate = null;
+      priorityToggle.classList.remove('active');
+      tagBtns.forEach(b => b.classList.remove('active'));
+      dateBtn.innerHTML = '📅 Due date';
+      dateBtn.classList.remove('active');
+      dueDateInput.value = '';
+
+      setSyncState('synced', `Synced · ${tasks.length} tasks`);
+      render();
+      input.focus();
+      if (navigator.vibrate) navigator.vibrate(10);
+    } catch (err) {
+      setSyncState('error', 'Save failed');
+      showError('Could not save task. Please try again.');
+      console.error(err);
+    } finally {
+      addBtn.disabled = false;
+      addBtn.textContent = 'ADD';
+    }
+  }
+
+  // ── Toggle complete ──
+  async function toggleTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+
+    const newCompleted = !task.completed;
+    task.completed = newCompleted; // optimistic update
+    render();
+
+    setSyncState('syncing', 'Saving...');
+    try {
+      await apiPatch(id, { Status: newCompleted ? 'Completed' : 'Active' });
+      setSyncState('synced', `Synced · ${tasks.length} tasks`);
+      if (navigator.vibrate) navigator.vibrate(newCompleted ? [10, 30, 10] : 10);
+    } catch (err) {
+      task.completed = !newCompleted; // rollback
+      setSyncState('error', 'Update failed');
+      showError('Could not update task status.');
+      render();
+      console.error(err);
+    }
+  }
+
+  // ── Delete task ──
+  async function deleteTask(id) {
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if (el) el.classList.add('removing');
+
+    setSyncState('syncing', 'Deleting...');
+    try {
+      await apiDelete(id);
+      tasks = tasks.filter(t => t.id !== id);
+      setSyncState('synced', `Synced · ${tasks.length} tasks`);
+      setTimeout(() => render(), 280);
+    } catch (err) {
+      if (el) el.classList.remove('removing');
+      setSyncState('error', 'Delete failed');
+      showError('Could not delete task.');
+      console.error(err);
+    }
+  }
+
+  // ── Due date helpers ──
+  function getDueStatus(dueDate) {
+    if (!dueDate) return null;
+    const now   = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const due   = new Date(dueDate + 'T00:00:00');
+    const diff  = Math.floor((due - today) / 86400000);
+    if (diff < 0)  return 'overdue';
+    if (diff === 0) return 'due-today';
+    if (diff <= 3)  return 'due-soon';
+    return 'due-later';
+  }
+
+  function formatDueDate(dueDate) {
+    const d     = new Date(dueDate + 'T00:00:00');
+    const now   = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diff  = Math.floor((d - today) / 86400000);
+    if (diff === 0)  return 'Today';
+    if (diff === 1)  return 'Tomorrow';
+    if (diff === -1) return 'Yesterday';
+    if (diff < -1)   return `${Math.abs(diff)}d overdue`;
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  // ── Render ──
+  function render() {
+    let filtered = tasks;
+    if (currentFilter === 'active')    filtered = tasks.filter(t => !t.completed);
+    if (currentFilter === 'completed') filtered = tasks.filter(t => t.completed);
+    if (currentFilter === 'priority')  filtered = tasks.filter(t => t.priority);
+    if (currentFilter === 'overdue')   filtered = tasks.filter(t => !t.completed && t.dueDate && getDueStatus(t.dueDate) === 'overdue');
+
+    filtered = [...filtered].sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      if (a.priority  !== b.priority)  return b.priority  ? 1 : -1;
+      if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+      if (a.dueDate && !b.dueDate) return -1;
+      if (!a.dueDate && b.dueDate) return 1;
+      return b.id - a.id;
+    });
+
+    if (filtered.length === 0) {
+      taskList.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">✦</div>
+          <p>${currentFilter === 'all' ? 'Your slate is clean. Add a task to begin.' : 'No tasks match this filter.'}</p>
+        </div>`;
+    } else {
+      taskList.innerHTML = filtered.map((t, i) => {
+        const dueStatus = t.dueDate ? getDueStatus(t.dueDate) : null;
+        const dueLabel  = t.dueDate ? formatDueDate(t.dueDate) : '';
+        const tagClass  = t.tag ? t.tag : '';
+        return `
+        <div class="task-item ${t.completed ? 'completed' : ''}" data-id="${t.id}" style="animation-delay:${i * 0.03}s">
+          <div class="checkbox ${t.completed ? 'checked' : ''}" onclick="toggleTask(${t.id})"></div>
+          <div class="task-content">
+            <div class="task-text">${escapeHtml(t.text)}</div>
+            <div class="task-meta">
+              ${t.priority ? '<span class="task-tag priority">★ Priority</span>' : ''}
+              ${t.tag ? `<span class="task-tag ${tagClass}">${t.tag}</span>` : ''}
+              ${t.dueDate ? `<span class="task-due ${dueStatus}">📅 ${dueLabel}</span>` : ''}
+              ${t.date ? `<span class="task-time">${t.date} ${t.time}</span>` : ''}
+            </div>
+          </div>
+          <button class="delete-btn" onclick="deleteTask(${t.id})" aria-label="Delete task">✕</button>
+        </div>`;
+      }).join('');
+    }
+
+    const total   = tasks.length;
+    const done    = tasks.filter(t => t.completed).length;
+    const overdue = tasks.filter(t => !t.completed && t.dueDate && getDueStatus(t.dueDate) === 'overdue').length;
+
+    document.getElementById('totalCount').textContent   = total;
+    document.getElementById('doneCount').textContent    = done;
+    document.getElementById('pendingCount').textContent = total - done;
+
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = overdue > 0
+      ? `${pct}% complete · ${overdue} overdue`
+      : `${pct}% complete`;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
 
   // ── Date picker ──
   dateBtn.addEventListener('click', (e) => {
@@ -605,176 +929,17 @@
     });
   });
 
-  // ── Add task ──
-  function addTask() {
-    const text = input.value.trim();
-    if (!text) return;
-
-    tasks.unshift({
-      id: Date.now(),
-      text,
-      completed: false,
-      priority: isPriority,
-      tag: selectedTag,
-      dueDate: selectedDueDate || null,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      date: new Date().toLocaleDateString([], { month: 'short', day: 'numeric' })
-    });
-
-    input.value = '';
-    isPriority = false;
-    selectedTag = null;
-    selectedDueDate = null;
-    priorityToggle.classList.remove('active');
-    tagBtns.forEach(b => b.classList.remove('active'));
-    dateBtn.innerHTML = '📅 Due date';
-    dateBtn.classList.remove('active');
-    dueDateInput.value = '';
-    saveTasks();
-    render();
-    input.focus();
-
-    // Haptic feedback if available
-    if (navigator.vibrate) navigator.vibrate(10);
-  }
-
+  // ── Add task events ──
   addBtn.addEventListener('click', addTask);
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') addTask();
-  });
-
-  // ── Toggle complete ──
-  function toggleTask(id) {
-    const task = tasks.find(t => t.id === id);
-    if (task) {
-      task.completed = !task.completed;
-      saveTasks();
-
-      // Animate the checkbox
-      const cb = document.querySelector(`[data-id="${id}"] .checkbox`);
-      if (cb && task.completed) {
-        cb.classList.add('just-checked');
-        setTimeout(() => cb.classList.remove('just-checked'), 300);
-      }
-
-      if (navigator.vibrate) navigator.vibrate(task.completed ? [10, 30, 10] : 10);
-      render();
-    }
-  }
-
-  // ── Delete task ──
-  function deleteTask(id) {
-    const el = document.querySelector(`[data-id="${id}"]`);
-    if (el) {
-      el.classList.add('removing');
-      setTimeout(() => {
-        tasks = tasks.filter(t => t.id !== id);
-        saveTasks();
-        render();
-      }, 280);
-    }
-  }
-
-  // ── Due date helpers ──
-  function getDueStatus(dueDate) {
-    if (!dueDate) return null;
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const due = new Date(dueDate + 'T00:00:00');
-    const diffDays = Math.floor((due - today) / (1000 * 60 * 60 * 24));
-    if (diffDays < 0) return 'overdue';
-    if (diffDays === 0) return 'due-today';
-    if (diffDays <= 3) return 'due-soon';
-    return 'due-later';
-  }
-
-  function formatDueDate(dueDate) {
-    const d = new Date(dueDate + 'T00:00:00');
-    const status = getDueStatus(dueDate);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const diffDays = Math.floor((d - today) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Tomorrow';
-    if (diffDays === -1) return 'Yesterday';
-    if (diffDays < -1) return `${Math.abs(diffDays)}d overdue`;
-    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
-  }
-
-  // ── Render ──
-  function render() {
-    let filtered = tasks;
-    if (currentFilter === 'active') filtered = tasks.filter(t => !t.completed);
-    if (currentFilter === 'completed') filtered = tasks.filter(t => t.completed);
-    if (currentFilter === 'priority') filtered = tasks.filter(t => t.priority);
-    if (currentFilter === 'overdue') filtered = tasks.filter(t => !t.completed && t.dueDate && getDueStatus(t.dueDate) === 'overdue');
-
-    filtered = [...filtered].sort((a, b) => {
-      if (a.completed !== b.completed) return a.completed ? 1 : -1;
-      if (a.priority !== b.priority) return b.priority ? 1 : -1;
-      // Sort by due date (soonest first), tasks without due dates go last
-      if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
-      if (a.dueDate && !b.dueDate) return -1;
-      if (!a.dueDate && b.dueDate) return 1;
-      return b.id - a.id;
-    });
-
-    if (filtered.length === 0) {
-      taskList.innerHTML = `
-        <div class="empty-state">
-          <div class="icon">✦</div>
-          <p>${currentFilter === 'all' ? 'Your slate is clean. Add a task to begin.' : 'No tasks match this filter.'}</p>
-        </div>`;
-    } else {
-      taskList.innerHTML = filtered.map((t, i) => {
-        const dueStatus = t.dueDate ? getDueStatus(t.dueDate) : null;
-        const dueLabel = t.dueDate ? formatDueDate(t.dueDate) : '';
-        return `
-        <div class="task-item ${t.completed ? 'completed' : ''}" data-id="${t.id}" style="animation-delay:${i * 0.03}s">
-          <div class="checkbox ${t.completed ? 'checked' : ''}" onclick="toggleTask(${t.id})"></div>
-          <div class="task-content">
-            <div class="task-text">${escapeHtml(t.text)}</div>
-            <div class="task-meta">
-              ${t.priority ? '<span class="task-tag priority">★ Priority</span>' : ''}
-              ${t.tag ? `<span class="task-tag ${t.tag}">${t.tag}</span>` : ''}
-              ${t.dueDate ? `<span class="task-due ${dueStatus}">📅 ${dueLabel}</span>` : ''}
-              <span class="task-time">${t.date || ''} ${t.time}</span>
-            </div>
-          </div>
-          <button class="delete-btn" onclick="deleteTask(${t.id})" aria-label="Delete task">✕</button>
-        </div>`;
-      }).join('');
-    }
-
-    // Stats — count overdue for the stat bar
-    const total = tasks.length;
-    const done = tasks.filter(t => t.completed).length;
-    const overdue = tasks.filter(t => !t.completed && t.dueDate && getDueStatus(t.dueDate) === 'overdue').length;
-    document.getElementById('totalCount').textContent = total;
-    document.getElementById('doneCount').textContent = done;
-    document.getElementById('pendingCount').textContent = total - done;
-
-    const pct = total ? Math.round((done / total) * 100) : 0;
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressLabel').textContent = overdue > 0
-      ? `${pct}% complete · ${overdue} overdue`
-      : `${pct}% complete`;
-  }
-
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
 
   // ── Service Worker ──
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
 
-  // Initial render
-  render();
+  // ── Boot ──
+  loadTasks();
 </script>
 </body>
 </html>
