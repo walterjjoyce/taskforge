@@ -668,7 +668,7 @@
     showSkeleton();
     try {
       let allRows = [];
-      let url = API_BASE + '?user_field_names=true&size=100&order_by=-id';
+      let url = API_BASE + '?user_field_names=true&size=100';
       while (url) {
         const data = await apiGet(url);
         allRows = allRows.concat(data.results || []);
